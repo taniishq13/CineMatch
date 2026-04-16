@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #080A0F;
+    color: #E5E7EB;
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0D1117;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #1F2D45;
+    border-radius: 99px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #F59E0B;
+  }
+}
+
+@layer components {
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .card-hover:hover {
+    @apply -translate-y-2;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(245, 158, 11, 0.2);
+  }
+
+  .glow-amber {
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);
+  }
+
+  .text-gradient-amber {
+    background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glass {
+    background: rgba(17, 24, 39, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(31, 45, 69, 0.6);
+  }
+
+  .shimmer-bg {
+    background: linear-gradient(
+      90deg,
+      #111827 0px,
+      #1F2D45 40px,
+      #111827 80px
+    );
+    background-size: 700px 100%;
+    animation: shimmer 1.8s infinite linear;
+  }
+}
