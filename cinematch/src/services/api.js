@@ -21,6 +21,7 @@ function toMovieCard(item) {
     title,
     poster_url: item.poster_url || null,
     release_date: item.release_date || "",
+    vote_average: item.vote_average ?? null,
   };
 }
 
@@ -35,6 +36,7 @@ function normalizeCardList(data) {
       title: item.title || item.name || "Untitled",
       poster_url: item.poster_path ? `${TMDB_IMG}${item.poster_path}` : null,
       release_date: item.release_date || "",
+      vote_average: item.vote_average ?? null,
     })).filter((item) => item.tmdb_id);
   }
 
@@ -49,6 +51,7 @@ function normalizeTMDBResults(data) {
       title: m.title || "Untitled",
       poster_url: m.poster_url || null,
       release_date: m.release_date || "",
+      vote_average: m.vote_average ?? null,
     }));
   }
   if (data?.results) {
@@ -59,6 +62,7 @@ function normalizeTMDBResults(data) {
         title: m.title,
         poster_url: m.poster_path ? `${TMDB_IMG}${m.poster_path}` : null,
         release_date: m.release_date || "",
+        vote_average: m.vote_average ?? null,
       }));
   }
   return [];

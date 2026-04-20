@@ -6,71 +6,76 @@ export default function MovieCard({ movie, index = 0 }) {
   const [imgError, setImgError] = useState(false)
   const navigate = useNavigate()
 
-  const { tmdb_id, title, poster_url, score } = movie
+  const { tmdb_id, title, poster_url, release_date } = movie
+  const year = release_date ? release_date.slice(0, 4) : ''
 
   const handleClick = () => {
     if (tmdb_id) navigate(`/movie/${tmdb_id}`)
   }
 
   return (
-    <div
+    <button
+      type="button"
       onClick={handleClick}
-      className="group relative cursor-pointer card-hover animate-fade-up"
-      style={{ animationDelay: `${Math.min(index * 40, 400)}ms`, animationFillMode: 'both' }}
+      className="group relative flex cursor-pointer flex-col overflow-hidden rounded-[8px] border border-film-border bg-film-surface text-left shadow-[0_12px_32px_rgba(0,0,0,0.32)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_24px_50px_rgba(0,0,0,0.5)] animate-fade-up"
+      style={{
+        animationDelay: `${Math.min(index * 100, 500)}ms`,
+        animationFillMode: 'both',
+      }}
     >
-      {/* Poster */}
-      <div className="relative rounded-xl overflow-hidden bg-film-card aspect-[2/3] shadow-lg">
-        {/* Skeleton */}
-        {!imgLoaded && !imgError && (
+      <div className="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-film-card via-film-surface to-film-black">
+        {poster_url && !imgLoaded && !imgError && (
           <div className="absolute inset-0 shimmer-bg" />
         )}
 
-        {/* Poster image */}
         {poster_url && !imgError ? (
           <img
             src={poster_url}
             alt={title}
-            className={`w-full h-full object-cover transition-all duration-500 ${
+            className={`h-full w-full object-cover transition-all duration-500 group-hover:scale-105 ${
               imgLoaded ? 'opacity-100' : 'opacity-0'
-            } group-hover:scale-105 transition-transform duration-500`}
+            }`}
             onLoad={() => setImgLoaded(true)}
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-film-muted gap-3 p-4">
-            <svg className="w-10 h-10 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
-            </svg>
-            <span className="text-xs text-center opacity-50 leading-tight">{title}</span>
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-film-card via-[#1f1f1f] to-film-black">
+            <div className="flex h-full w-full flex-col items-center justify-center px-6 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-film-amber/20 bg-film-black/40 shadow-[0_8px_24px_rgba(0,0,0,0.25)]">
+                <svg
+                  className="h-8 w-8 text-film-amber"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                  aria-hidden="true"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 7.5h16M7 7.5V6a1 1 0 011-1h8a1 1 0 011 1v1.5M6 7.5v9A2.5 2.5 0 008.5 19h7A2.5 2.5 0 0018 16.5v-9M9.5 11.5h.01M14.5 11.5h.01M10 15.5h4" />
+                </svg>
+              </div>
+              <p className="mt-4 text-[12px] font-semibold uppercase tracking-[1px] text-film-soft">
+                Poster unavailable
+              </p>
+              <p className="mt-1 max-w-[160px] text-[11px] leading-4 text-film-muted">
+                We still have the movie title and details below.
+              </p>
+            </div>
           </div>
         )}
 
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-film-black via-film-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
-          <button className="w-full py-2 rounded-lg bg-film-amber text-film-black text-xs font-semibold tracking-wide hover:bg-film-gold transition-colors">
-            View Details
-          </button>
-        </div>
-
-        {/* Score badge */}
-        {score !== undefined && (
-          <div className="absolute top-2 right-2 bg-film-black/80 backdrop-blur-sm border border-film-amber/30 rounded-full px-2 py-0.5 flex items-center gap-1">
-            <svg className="w-3 h-3 text-film-amber" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            <span className="text-film-amber text-xs font-mono font-medium">
-              {(score * 100).toFixed(0)}%
-            </span>
-          </div>
-        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-transparent to-transparent" />
+        <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[linear-gradient(45deg,transparent_30%,rgba(255,107,53,0.1)_50%,transparent_70%)]" />
       </div>
 
-      {/* Title */}
-      <div className="mt-2.5 px-0.5">
-        <p className="text-film-soft text-xs font-medium leading-snug line-clamp-2 group-hover:text-film-white transition-colors duration-200">
+      <div className="flex min-h-[92px] flex-col justify-end bg-film-card px-4 py-4">
+        <p className="line-clamp-2 text-[15px] font-bold leading-snug text-white transition-colors duration-300 group-hover:text-film-white">
           {title}
         </p>
+
+        <p className="mt-2 text-[12px] leading-none text-film-muted">
+          {year || '—'}
+        </p>
       </div>
-    </div>
+    </button>
   )
 }

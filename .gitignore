@@ -2,3 +2,8 @@
 .venv
 test.py
 node_modules
+.DS_Store
+__pycache__/
+*.pyc
+cinematch/dist/
+cinematch/.vite/

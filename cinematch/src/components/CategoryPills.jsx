@@ -1,28 +1,33 @@
 const CATEGORIES = [
-  { value: 'trending', label: 'Trending', icon: '🔥' },
-  { value: 'popular', label: 'Popular', icon: '⭐' },
-  { value: 'top_rated', label: 'Top Rated', icon: '🏆' },
-  { value: 'now_playing', label: 'Now Playing', icon: '🎬' },
-  { value: 'upcoming', label: 'Upcoming', icon: '🚀' },
+  { value: 'trending', label: 'Trending' },
+  { value: 'popular', label: 'Popular' },
+  { value: 'top_rated', label: 'Top Rated' },
+  { value: 'now_playing', label: 'Now Playing' },
+  { value: 'upcoming', label: 'Coming Soon' },
 ]
 
 export default function CategoryPills({ selected, onChange }) {
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      {CATEGORIES.map((cat) => (
-        <button
-          key={cat.value}
-          onClick={() => onChange(cat.value)}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${
-            selected === cat.value
-              ? 'bg-film-amber text-film-black border-film-amber shadow-lg shadow-film-amber/20'
-              : 'bg-film-surface border-film-border/50 text-film-soft hover:border-film-amber/40 hover:text-film-white'
-          }`}
-        >
-          <span>{cat.icon}</span>
-          {cat.label}
-        </button>
-      ))}
+    <div className="flex w-full gap-10 overflow-x-auto border-b border-film-border pb-4">
+      {CATEGORIES.map((cat) => {
+        const active = selected === cat.value
+
+        return (
+          <button
+            key={cat.value}
+            onClick={() => onChange(cat.value)}
+            className={`relative flex-shrink-0 pb-1 text-[14px] transition-colors duration-300 ${
+              active ? 'text-film-amber' : 'text-film-soft hover:text-white'
+            }`}
+            style={{ fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif' }}
+          >
+            {cat.label}
+            {active && (
+              <span className="absolute left-0 right-0 -bottom-[17px] h-[2px] bg-film-amber" />
+            )}
+          </button>
+        )
+      })}
     </div>
   )
 }

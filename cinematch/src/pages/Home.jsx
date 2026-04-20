@@ -1,13 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { fetchHome, fetchMoodRecommendations } from '../services/api'
 import MovieGrid from '../components/MovieGrid'
 import MoodInput from '../components/MoodInput'
 import CategoryPills from '../components/CategoryPills'
 import SectionHeader from '../components/SectionHeader'
 import ErrorState from '../components/ErrorState'
-import SearchBar from '../components/SearchBar'
 import Loader from '../components/Loader'
-import { useNavigate } from 'react-router-dom'
 
 export default function Home() {
   const [category, setCategory] = useState('trending')
@@ -21,11 +19,29 @@ export default function Home() {
   const [moodError, setMoodError] = useState(null)
   const [moodQuery, setMoodQuery] = useState('')
 
-  const [searchResults, setSearchResults] = useState([])
-  const [searchActive, setSearchActive] = useState(false)
-
   const moodResultsRef = useRef(null)
-  const navigate = useNavigate()
+
+  useEffect(() => {
+    let cancelled = false
+
+    setHomeLoading(true)
+    setHomeError(null)
+
+    fetchHome(category, 24)
+      .then((data) => {
+        if (!cancelled) setHomeMovies(data)
+      })
+      .catch((err) => {
+        if (!cancelled) setHomeError(err?.message || 'Unable to load movies.')
+      })
+      .finally(() => {
+        if (!cancelled) setHomeLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [category])
 
   useEffect(() => {
     const shouldShowWakeMessage = homeLoading && homeMovies.length === 0 && !homeError
@@ -42,131 +58,101 @@ export default function Home() {
     return () => window.clearTimeout(wakeTimer)
   }, [homeLoading, homeMovies.length, homeError])
 
-  // Fetch home feed on category change
-  useEffect(() => {
-    let cancelled = false
-    setHomeLoading(true)
-    setHomeError(null)
-    fetchHome(category, 24)
-      .then((data) => { if (!cancelled) setHomeMovies(data) })
-      .catch((err) => { if (!cancelled) setHomeError(err.message) })
-      .finally(() => { if (!cancelled) setHomeLoading(false) })
-    return () => { cancelled = true }
-  }, [category])
-
   const handleMood = async (text) => {
     setMoodLoading(true)
     setMoodError(null)
     setMoodMovies([])
     setMoodQuery(text)
+
     try {
       const data = await fetchMoodRecommendations(text, 18)
       setMoodMovies(data)
-      setTimeout(() => moodResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
+      window.setTimeout(() => {
+        moodResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
     } catch (err) {
-      setMoodError(err.message)
+      setMoodError(err?.message || 'Unable to get recommendations.')
     } finally {
       setMoodLoading(false)
     }
   }
 
-  const handleSearchResults = (results) => {
-    setSearchResults(results)
-    setSearchActive(results.length > 0)
-  }
-
-  const handleSearchSelect = (movie) => {
-    navigate(`/movie/${movie.tmdb_id}`)
-    setSearchActive(false)
-    setSearchResults([])
-  }
-
   return (
-    <div className="min-h-screen bg-film-black">
-      {/* ─── HERO ─── */}
-      <div className="relative pt-16 pb-0 overflow-hidden">
-        {/* Background atmosphere */}
-        <div className="absolute inset-0 bg-gradient-radial from-film-amber/5 via-transparent to-transparent pointer-events-none" style={{ top: '-20%' }} />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-film-amber/30 to-transparent" />
+    <div className="min-h-screen overflow-x-hidden bg-film-black text-white">
+      <section id="hero" className="relative overflow-hidden border-b border-film-border bg-film-black">
+        <div className="absolute inset-0 bg-film-grain opacity-[0.14] pointer-events-none" />
+        <div className="absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-film-border to-transparent" />
 
-        <div className="max-w-[1440px] mx-auto px-6 pt-16 pb-12">
-          {/* Hero text */}
-          <div className="text-center mb-10 animate-fade-up">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-film-amber/10 border border-film-amber/20 text-film-amber text-xs font-mono tracking-widest mb-5">
-              <span className="w-1.5 h-1.5 rounded-full bg-film-amber animate-pulse-slow" />
+        <div className="pointer-events-none absolute right-[-220px] top-[85px] h-[560px] w-[560px] rounded-full bg-[radial-gradient(circle_at_center,rgba(255,107,53,0.24)_0%,rgba(255,107,53,0.14)_32%,rgba(255,107,53,0.04)_58%,transparent_74%)] blur-2xl" />
+        <div className="pointer-events-none absolute right-[-80px] top-[220px] h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle_at_center,rgba(255,107,53,0.12)_0%,rgba(255,107,53,0.08)_36%,transparent_72%)] blur-2xl" />
+        <div className="pointer-events-none absolute right-[4%] top-[220px] h-[540px] w-[540px] rounded-full border border-film-amber/10 opacity-70" />
+
+        <div className="relative mx-auto max-w-[1200px] px-[15px] pb-[80px] pt-[100px] sm:px-[20px] md:px-[30px] lg:px-[50px]">
+          <div className="max-w-[560px] animate-fade-down" style={{ animationDelay: '0s', animationFillMode: 'both' }}>
+            <div className="inline-flex items-center gap-2 rounded-full border border-film-amber/70 bg-[rgba(255,107,53,0.08)] px-5 py-3 text-[12px] font-semibold uppercase tracking-[1px] text-film-amber">
+              <span className="text-[10px]">✦</span>
               AI-POWERED RECOMMENDATIONS
             </div>
-            <h1 className="font-display text-6xl md:text-8xl tracking-widest text-film-white leading-none mb-4">
-              FIND YOUR{' '}
-              <span className="text-gradient-amber">FILM</span>
+
+            <h1
+              className="mt-7 max-w-[520px] text-[42px] font-bold leading-[1.05] tracking-[-2px] text-white md:text-[56px] lg:text-[88px]"
+              style={{ fontFamily: 'Georgia, Times New Roman, serif' }}
+            >
+              Find your
+              <br />
+              <span className="text-film-amber">FILM</span>
             </h1>
-            <p className="text-film-muted text-lg max-w-xl mx-auto leading-relaxed">
-              Describe your mood, search by title, or browse curated collections — your perfect movie is one click away.
+
+            <p className="mt-8 max-w-[500px] text-[14px] leading-[1.8] text-film-soft md:text-[16px]">
+              Describe your mood, search by title, or browse curated collections — your perfect movie is one conversation away.
             </p>
-
           </div>
 
-          {/* Hero search bar (large, visible on mobile) */}
-          <div className="max-w-2xl mx-auto mb-4 sm:hidden animate-fade-up" style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
-            <SearchBar onSelect={handleSearchSelect} onResults={handleSearchResults} />
+          <div id="collections" className="mt-14 max-w-[1100px] animate-fade-up" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
+            <MoodInput onSubmit={handleMood} loading={moodLoading} />
           </div>
 
-          {/* Hero search results (mobile) */}
-          {searchActive && searchResults.length > 0 && (
-            <div className="mb-10">
-              <SectionHeader icon="🔍" title="SEARCH RESULTS" />
-              <MovieGrid movies={searchResults.slice(0, 24)} loading={false} />
-            </div>
+          {(moodLoading || moodMovies.length > 0 || moodError) && (
+            <section ref={moodResultsRef} className="mt-12 animate-fade-up">
+              <SectionHeader
+                icon="✨"
+                title="Mood Picks"
+                subtitle={moodQuery ? `Because you wanted: "${moodQuery}"` : 'Curated recommendations based on your vibe.'}
+                accent
+              />
+
+              <div className="mt-6">
+                {moodError ? (
+                  <ErrorState message={moodError} onRetry={() => handleMood(moodQuery)} />
+                ) : (
+                  <MovieGrid movies={moodMovies} loading={moodLoading} cols={5} />
+                )}
+              </div>
+            </section>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* ─── MAIN CONTENT ─── */}
-      <div className="max-w-[1440px] mx-auto px-6 pb-20 space-y-14">
-
-        {/* ─── MOOD SECTION ─── */}
-        <section className="animate-fade-up" style={{ animationDelay: '150ms', animationFillMode: 'both' }}>
-          <MoodInput onSubmit={handleMood} loading={moodLoading} />
-        </section>
-
-        {/* Mood results */}
-        {(moodLoading || moodMovies.length > 0 || moodError) && (
-          <section ref={moodResultsRef} className="animate-fade-up">
-            <SectionHeader
-              icon="✨"
-              title="MOOD PICKS"
-              subtitle={moodQuery ? `Because you wanted: "${moodQuery}"` : undefined}
-              accent
-            />
-            {moodError ? (
-              <ErrorState message={moodError} onRetry={() => handleMood(moodQuery)} />
-            ) : (
-              <MovieGrid movies={moodMovies} loading={moodLoading} />
-            )}
-          </section>
-        )}
-
-        {/* ─── HOME FEED ─── */}
-        <section>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
-            <SectionHeader
-              icon={category === 'trending' ? '🔥' : category === 'top_rated' ? '🏆' : category === 'upcoming' ? '🚀' : '🎬'}
-              title={category.replace('_', ' ').toUpperCase()}
-            />
-          </div>
-
-          {/* Category selector */}
-          <div className="mb-6">
+      <section id="browse" className="border-t border-film-border bg-film-black">
+        <div className="mx-auto max-w-[1200px] px-[15px] py-[60px] sm:px-[20px] md:px-[30px] lg:px-[50px]">
+          <div className="flex flex-col gap-6">
+            <SectionHeader icon="🔥" title="Trending Now" />
             <CategoryPills selected={category} onChange={setCategory} />
           </div>
 
-          {homeError ? (
-            <ErrorState message={homeError} onRetry={() => setCategory(category)} />
-          ) : (
-            <MovieGrid movies={homeMovies} loading={homeLoading} />
-          )}
-        </section>
-      </div>
+          <div className="mt-10">
+            {homeError ? (
+              <ErrorState message={homeError} onRetry={() => setCategory(category)} />
+            ) : (
+              <MovieGrid movies={homeMovies} loading={homeLoading} />
+            )}
+          </div>
+
+          <p className="mt-10 text-center text-[12px] text-film-muted">
+            Scroll to discover more → Hover over cards for details
+          </p>
+        </div>
+      </section>
 
       {showWakeMessage && (
         <Loader fullPage text="Waking up server... this may take ~30 seconds" />

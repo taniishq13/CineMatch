@@ -1,63 +1,62 @@
-import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import SearchBar from './SearchBar'
+import { Link } from 'react-router-dom'
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  const scrollToId = (id) => {
+    const el = document.getElementById(id)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? 'glass border-b border-film-border/50'
-          : 'bg-gradient-to-b from-film-black/90 to-transparent border-transparent'
-      }`}
-    >
-      <div className="max-w-[1440px] mx-auto px-6 h-16 flex items-center gap-6">
+    <nav className="sticky top-0 z-50 h-20 bg-film-black border-b border-film-border">
+      <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-[15px] sm:px-[20px] md:px-[30px] lg:px-[50px]">
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2 shrink-0 group"
+          className="flex items-center gap-1 shrink-0 select-none"
         >
-          <div className="relative">
-            <span className="font-display text-3xl tracking-widest text-gradient-amber leading-none">
+          <span
+            className="text-[24px] font-bold tracking-[2px] leading-none text-white"
+            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          >
               CINE
-            </span>
-            <span className="font-display text-3xl tracking-widest text-film-white leading-none">
+          </span>
+          <span
+            className="text-[24px] font-bold tracking-[2px] leading-none text-film-amber"
+            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          >
               MATCH
-            </span>
-            <div className="absolute -bottom-0.5 left-0 w-full h-px bg-gradient-to-r from-film-amber to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
-          </div>
+          </span>
         </Link>
-
-        {/* Spacer */}
-        <div className="flex-1" />
-
-        {/* Search */}
-        <div className="w-72 hidden sm:block">
-          <SearchBar
-            compact
-            onSelect={(movie) => navigate(`/movie/${movie.tmdb_id}`)}
-          />
-        </div>
 
         {/* Home link */}
-        <Link
-          to="/"
-          className="flex items-center gap-2 text-film-soft hover:text-film-white text-sm font-medium tracking-wide transition-colors duration-200 shrink-0"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          Home
-        </Link>
+        <div className="hidden items-center gap-10 md:flex">
+          <button
+            type="button"
+            onClick={() => scrollToId('browse')}
+            className="text-[13px] font-normal tracking-[0.5px] text-film-soft transition-colors duration-300 hover:text-film-amber"
+            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          >
+            Browse
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToId('collections')}
+            className="text-[13px] font-normal tracking-[0.5px] text-film-soft transition-colors duration-300 hover:text-film-amber"
+            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          >
+            Collections
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToId('browse')}
+            className="text-[13px] font-normal tracking-[0.5px] text-film-soft transition-colors duration-300 hover:text-film-amber"
+            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          >
+            Watchlist
+          </button>
+        </div>
       </div>
     </nav>
   )

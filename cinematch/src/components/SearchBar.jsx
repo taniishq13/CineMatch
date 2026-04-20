@@ -2,8 +2,6 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { searchMovies } from '../services/api'
 
-const TMDB_IMG_SMALL = 'https://image.tmdb.org/t/p/w92'
-
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value)
   useEffect(() => {
@@ -136,10 +134,12 @@ export default function SearchBar({ compact = false, onSelect, onResults }) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-film-muted">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
-                    </svg>
+                  <div className="w-full h-full bg-gradient-to-br from-film-card via-[#1f1f1f] to-film-black flex items-center justify-center border border-film-border/50">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-film-amber/20 bg-film-black/40 shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
+                      <svg className="w-3.5 h-3.5 text-film-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 7.5h16M7 7.5V6a1 1 0 011-1h8a1 1 0 011 1v1.5M6 7.5v9A2.5 2.5 0 008.5 19h7A2.5 2.5 0 0018 16.5v-9M9.5 11.5h.01M14.5 11.5h.01M10 15.5h4" />
+                      </svg>
+                    </div>
                   </div>
                 )}
               </div>

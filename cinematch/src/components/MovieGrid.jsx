@@ -3,19 +3,11 @@ import SkeletonCard from './SkeletonCard'
 
 export default function MovieGrid({ movies, loading, cols = 6, label }) {
   const safeMovies = Array.isArray(movies) ? movies : []
-
-  const colClasses = {
-    4: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
-    5: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5',
-    6: 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6',
-    7: 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7',
-  }
-
-  const gridClass = colClasses[cols] || colClasses[6]
+  const gridClass = 'grid grid-cols-2 gap-3 sm:gap-4 md:gap-[18px] lg:gap-[25px] md:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] xl:grid-cols-[repeat(auto-fit,minmax(240px,1fr))]'
 
   if (loading) {
     return (
-      <div className={`grid ${gridClass} gap-4`}>
+      <div className={gridClass}>
         {Array.from({ length: cols * 2 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
@@ -35,7 +27,7 @@ export default function MovieGrid({ movies, loading, cols = 6, label }) {
   }
 
   return (
-    <div className={`grid ${gridClass} gap-4`}>
+    <div className={gridClass}>
       {safeMovies.map((movie, i) => (
         <MovieCard key={`${movie.tmdb_id}-${i}`} movie={movie} index={i} />
       ))}
