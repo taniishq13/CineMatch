@@ -1,12 +1,23 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_BASE;
+const BASE_URL = import.meta.env.VITE_API_BASE || "https://cinematch-kgl1.onrender.com";
 const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
 
 const api = axios.create({
   baseURL: BASE_URL,
   timeout: 60000,
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error?.code === "ERR_NETWORK") {
+      const message = `Network error: cannot reach backend at ${BASE_URL}`;
+      return Promise.reject(new Error(message));
+    }
+    return Promise.reject(error);
+  },
+);
 
 function toMovieCard(item) {
   if (!item || typeof item !== "object") return null;
