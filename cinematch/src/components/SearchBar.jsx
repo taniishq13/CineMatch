@@ -36,9 +36,10 @@ export default function SearchBar({ compact = false, onSelect, onResults }) {
     searchMovies(debouncedQuery.trim())
       .then((data) => {
         if (!cancelled) {
-          setResults(data.slice(0, 8))
+          const safeResults = Array.isArray(data) ? data : []
+          setResults(safeResults.slice(0, 8))
           setOpen(true)
-          onResults?.(data)
+          onResults?.(safeResults)
         }
       })
       .catch(() => {})

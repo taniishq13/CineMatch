@@ -1,7 +1,7 @@
 export default function Loader({ text = 'Loading…', fullPage = false }) {
   if (fullPage) {
     return (
-      <div className="fixed inset-0 bg-film-black flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-film-black flex items-center justify-center z-[80]">
         <div className="flex flex-col items-center gap-4">
           <div className="relative w-12 h-12">
             <div className="absolute inset-0 rounded-full border-2 border-film-border/30" />

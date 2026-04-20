@@ -2,6 +2,8 @@ import MovieCard from './MovieCard'
 import SkeletonCard from './SkeletonCard'
 
 export default function MovieGrid({ movies, loading, cols = 6, label }) {
+  const safeMovies = Array.isArray(movies) ? movies : []
+
   const colClasses = {
     4: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
     5: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5',
@@ -21,7 +23,7 @@ export default function MovieGrid({ movies, loading, cols = 6, label }) {
     )
   }
 
-  if (!movies || movies.length === 0) {
+  if (safeMovies.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-film-muted gap-4">
         <svg className="w-12 h-12 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
@@ -34,7 +36,7 @@ export default function MovieGrid({ movies, loading, cols = 6, label }) {
 
   return (
     <div className={`grid ${gridClass} gap-4`}>
-      {movies.map((movie, i) => (
+      {safeMovies.map((movie, i) => (
         <MovieCard key={`${movie.tmdb_id}-${i}`} movie={movie} index={i} />
       ))}
     </div>

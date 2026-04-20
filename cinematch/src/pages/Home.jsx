@@ -6,6 +6,7 @@ import CategoryPills from '../components/CategoryPills'
 import SectionHeader from '../components/SectionHeader'
 import ErrorState from '../components/ErrorState'
 import SearchBar from '../components/SearchBar'
+import Loader from '../components/Loader'
 import { useNavigate } from 'react-router-dom'
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
   const [homeMovies, setHomeMovies] = useState([])
   const [homeLoading, setHomeLoading] = useState(true)
   const [homeError, setHomeError] = useState(null)
+  const [showWakeMessage, setShowWakeMessage] = useState(false)
 
   const [moodMovies, setMoodMovies] = useState([])
   const [moodLoading, setMoodLoading] = useState(false)
@@ -24,6 +26,21 @@ export default function Home() {
 
   const moodResultsRef = useRef(null)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const shouldShowWakeMessage = homeLoading && homeMovies.length === 0 && !homeError
+
+    if (!shouldShowWakeMessage) {
+      setShowWakeMessage(false)
+      return undefined
+    }
+
+    const wakeTimer = window.setTimeout(() => {
+      setShowWakeMessage(true)
+    }, 1200)
+
+    return () => window.clearTimeout(wakeTimer)
+  }, [homeLoading, homeMovies.length, homeError])
 
   // Fetch home feed on category change
   useEffect(() => {
@@ -86,6 +103,7 @@ export default function Home() {
             <p className="text-film-muted text-lg max-w-xl mx-auto leading-relaxed">
               Describe your mood, search by title, or browse curated collections — your perfect movie is one click away.
             </p>
+
           </div>
 
           {/* Hero search bar (large, visible on mobile) */}
@@ -149,6 +167,10 @@ export default function Home() {
           )}
         </section>
       </div>
+
+      {showWakeMessage && (
+        <Loader fullPage text="Waking up server... this may take ~30 seconds" />
+      )}
     </div>
   )
 }
